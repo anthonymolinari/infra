@@ -1,7 +1,6 @@
 resource "proxmox_vm_qemu" "machine" {
   name = var.vm_name
-  desc = "opensuse vm created with terraform"
-  vmid = 202
+  vmid = var.vm_id
   target_node = "pve"
   
 #   agent = 1
@@ -11,10 +10,10 @@ resource "proxmox_vm_qemu" "machine" {
   cpu = "host"
   memory = var.memory
 
-  # network {
-  #   bridge = "vmbr0"
-  #   model = "virtio"
-  # }
+  network {
+    bridge = "vmbr1"
+    model = "virtio"
+  }
 
   disk {
     storage = "vm_storage"

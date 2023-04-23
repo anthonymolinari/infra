@@ -16,7 +16,7 @@ variable "proxmox_api_token_secret" {
  
 # virtual machine configuration
 variable "clone" {
-  type = "string"
+  type = string
   description = "value"
 }
 
@@ -28,7 +28,6 @@ variable "vm_name" {
 variable "vm_static_ip" {
   type = string
   description = "value"
-  default = "dhcp"
 }
 
 variable "cores" {
