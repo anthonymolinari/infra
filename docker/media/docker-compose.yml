@@ -1,0 +1,75 @@
+version: "3"
+
+volumes:
+  plex:
+    external: false
+
+  sonarr:
+    external: false
+  radarr:
+    external: false
+  readarr:
+    external: false
+  
+
+services:
+  plex:
+    container_name: plex
+    image: linuxserver/plex:latest
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - VERSION=docker
+    volumes:
+      - "${DOCKER_PATH}/plex/config:/config"
+      - "${MEDIA_DIR}:/media"
+    network_mode: "host"
+    restart: unless_stopped
+
+  sonarr: 
+    container_name: sonarr
+    image: linuxserver/sonarr:latest
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TIMEZONE}
+    volumes:
+      - "${DOCKER_PATH}/sonarr/config:/config"
+      - "${MEDIA_DIR}/tv:/tv"
+      - "${DOWNLOAD_DIR}/torrents:/downloads"
+    ports:
+      - "8989:8989"
+    network_mode: "bridge"
+    restart: unless_stopped
+
+  radarr:
+    conatiner_name: radarr
+    image: linuxserver/radarr:latest
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGUD}
+      - TZ=${TIMEZONE}
+    volumes:
+      - "${DOCKER_PATH}/radarr/config:/config"
+      - "${MEDIA_DIR}/movies:/movies"
+      - "${DOWNLOAD_DIR}/torrents:/downloads"
+    ports: 
+      - "7878:7878"
+    network_mode: "bridge"
+    restart: unless_stopped
+  
+  vpn:
+    container_name: vpn
+    image:
+    volumes:
+    ports:
+    network_mode: "bridge"
+    restart: unless-stopped
+
+  prowlarr:
+    container_name: prowlarr
+    image: linuxserver/prowlarr:latest
+
+
+
+

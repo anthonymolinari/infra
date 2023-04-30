@@ -1,0 +1,14 @@
+version: "3"
+
+
+volumes:
+  jenkins:
+    external: false
+
+
+services:
+  jenkins:
+    container_name: jenkins
+    image:
+    volumes:
+

@@ -1,5 +1,10 @@
 # infra
 A monorepo for all my infrastructure projects
 
-- ansible
-- terraform 
+### ansible
+
+### terraform 
+
+### docker
+
+docker gitops using portainer
