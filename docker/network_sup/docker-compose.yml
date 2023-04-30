@@ -1,0 +1,53 @@
+version: "3"
+
+services:
+  duckdns:
+    container_name: duckdns
+    image: lscr.io/linuxserver/duckdns:latest
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - SUBDOMAINS=${SUBDOMAINS}
+      - TOKEN=${TOKEN}
+      - TZ=${TZ}
+    volumes:
+      - "${DOCKER_PATH}/duckdns/config:/config"
+    network_mode: "bridge"
+    restart: unless-stopped
+
+  wireguard:
+    container_name: wireguard
+    image: linuxserver/wireguard:latest
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - SERVERURL=${SUBDOMAINS}.duckdns.org
+      - PEERS=desktop,laptop,phone,tablet
+      - ALLOWEDIPS=0.0.0.0/0
+      - PEERDNS=1.1.1.1
+      - INTERNAL_SUBNET=${INTERNAL_SUBNET}
+    volumes:
+      - "${DOCKER_PATH}/wireguard/config:/config"
+      - "/lib/modules:/lib/modules"
+    ports:
+      - "51820:51820/udp"
+    network_mode: "bridge"
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+    restart: unless-stopped    
+
+  tautulli:
+    container_name: tautulli
+    image: linuxserver/tautulli:latest
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+    volumes:
+      - "${DOCKER_PATH}/tautulli/config:/config"
+      - "${DOCKER_PATH}/tautulli/logs:/logs"
+    ports:
+      - "8181:8181"
+    network_mode: "bridge"
+    restart: unless-stopped
+
