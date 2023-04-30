@@ -1,17 +1,5 @@
 version: "3"
 
-volumes:
-  plex:
-    external: false
-
-  sonarr:
-    external: false
-  radarr:
-    external: false
-  readarr:
-    external: false
-  
-
 services:
   plex:
     container_name: plex
@@ -43,11 +31,11 @@ services:
     restart: unless_stopped
 
   radarr:
-    conatiner_name: radarr
+    container_name: radarr
     image: linuxserver/radarr:latest
     environment:
       - PUID=${PUID}
-      - PGID=${PGUD}
+      - PGID=${PGID}
       - TZ=${TIMEZONE}
     volumes:
       - "${DOCKER_PATH}/radarr/config:/config"
@@ -60,16 +48,58 @@ services:
   
   vpn:
     container_name: vpn
-    image:
+    image: dperson/openvpn-client:latest
     volumes:
+      - "${DOCKER_PATH}/vpn-client:/vpn"
     ports:
+      - "9091:9091"
+      - "9696:9696"
     network_mode: "bridge"
+    environment:
+      - VPN=${VPN}
+      - ROUTE=${HOST_IP}
     restart: unless-stopped
 
   prowlarr:
     container_name: prowlarr
     image: linuxserver/prowlarr:latest
+    volumes:
+      - "${DOCKER_PATH}/prowlarr/config:/config"
+    network_mode: "container:[vpn]"
+    restart: unless-stopped
 
+  transmission:
+    container_name: transmission
+    image: lscr.io/linuxserver/transmission:latest
+    volumes:
+      - "${DOCKER_PATH}/transmission/config:/config"
+      - "${DOWNLOAD_DIR}/torrents:/downloads"
+    environment:
+      - PGID=${PGID}
+      - PUID=${PUID}
+    network_mode: "container:[vpn]"
+    restart: unless-stopped
 
+  openbooks:
+    container_name: openbooks
+    image: evan-buss/openbooks:latest
+    volumes:
+      - "${DOWNLOAD_DIR}:/books"
+    ports:
+      - "4567:4567"
+    command: --name iker_neptunus --persist -s irc.irchighway.net:9999
+    network_mode: "bridge"
+    restart: unless-stopped
 
+  audiobookshelf:
+    container_name: audiobookshelf
+    image: ghcr.io/advplyr/audiobookshelf:latest
+    volumes:
+      - "${DOCKER_PATH}/audiobookshelf/metdata:/metadata"
+      - "${DOCKER_PATH}/audiobookshelf/config:/config"
+      - "${MEDIA_DIR}/Audiobooks:/audiobooks"
+    ports:
+      - "13378:80"
+    network_mode: "bridge"
+    restart: unless-stopped
 
